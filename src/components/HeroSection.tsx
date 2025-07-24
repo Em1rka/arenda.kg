@@ -2,20 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import heroImage from "@/assets/hero-construction.jpg";
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
-      {/* Background - будет заменен на реальное фото стройплощадки */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5">
-        <div className="absolute inset-0 bg-secondary/10 opacity-20"></div>
-        {/* TODO: Заменить на реальное фото стройплощадки с техникой */}
-        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
-          <div className="text-center">
-            <div className="text-8xl mb-4">🏗️</div>
-            <p className="text-sm">Фото стройплощадки с техникой</p>
-          </div>
-        </div>
+      {/* Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-primary/20"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">

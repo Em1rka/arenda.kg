@@ -34,23 +34,24 @@ const EquipmentCard = ({
 }: EquipmentCardProps) => {
   return (
     <div className="card-equipment group cursor-pointer">
-      {/* Image Container */}
-      <div className="relative mb-4 rounded-lg overflow-hidden">
-        {/* TODO: Заменить на реальные фото техники */}
-        <div className="aspect-[4/3] bg-secondary/50 flex items-center justify-center">
-          {imageUrl ? (
-            <img 
-              src={imageUrl} 
-              alt={title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="text-center text-muted-foreground">
-              <div className="text-4xl mb-2">🚛</div>
-              <p className="text-sm">Фото техники</p>
-            </div>
-          )}
-        </div>
+        {/* Image Container */}
+        <div className="relative mb-4 rounded-lg overflow-hidden">
+          <div className="aspect-[4/3] bg-secondary/50">
+            {imageUrl ? (
+              <img 
+                src={imageUrl} 
+                alt={title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                <div className="text-center">
+                  <div className="text-4xl mb-2">🚛</div>
+                  <p className="text-sm">Фото техники</p>
+                </div>
+              </div>
+            )}
+          </div>
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex gap-2">
@@ -106,7 +107,7 @@ const EquipmentCard = ({
         <div className="flex items-center justify-between mb-4">
           <div>
             <span className="text-2xl font-bold text-foreground">
-              {price.toLocaleString('ru-RU')} ₸
+              {price.toLocaleString('ru-RU')} сом
             </span>
             <span className="text-sm text-muted-foreground ml-1">
               / {priceUnit}

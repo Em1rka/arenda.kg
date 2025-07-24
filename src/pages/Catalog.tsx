@@ -3,65 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Filter, Grid, List } from "lucide-react";
+import { Filter, Grid, List, Search } from "lucide-react";
 import Header from "@/components/Header";
 import EquipmentCard from "@/components/EquipmentCard";
+import { useEquipmentFilters } from "@/hooks/useEquipmentFilters";
+import { mockEquipment } from "@/data/mockEquipment";
 
 const Catalog = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [priceRange, setPriceRange] = useState([0, 50000]);
   const [showFilters, setShowFilters] = useState(false);
-
-  // Mock data - будет заменено на данные из API
-  const mockEquipment = [
-    {
-      id: "1",
-      title: "Экскаватор JCB JS330",
-      price: 15000,
-      priceUnit: "сутки" as const,
-      location: "Бишкек",
-      rating: 4.8,
-      reviewsCount: 23,
-      isPopular: true,
-      ownerName: "ОсОО Стройтех",
-      description: "Современный экскаватор для земляных работ. В отличном состоянии, все документы."
-    },
-    {
-      id: "2", 
-      title: "Автокран 25 тонн",
-      price: 12000,
-      priceUnit: "сутки" as const,
-      location: "Ош",
-      rating: 4.6,
-      reviewsCount: 18,
-      isNew: true,
-      ownerName: "Кран-Сервис",
-      description: "Автокран грузоподъемностью 25 тонн. Опытный машинист включен в стоимость."
-    },
-    {
-      id: "3",
-      title: "Самосвал КамАЗ",
-      price: 8000,
-      priceUnit: "сутки" as const,
-      location: "Бишкек",
-      rating: 4.5,
-      reviewsCount: 31,
-      ownerName: "ИП Асанов",
-      description: "Самосвал для перевозки сыпучих материалов. Объем кузова 12 кубов."
-    },
-    {
-      id: "4",
-      title: "Бульдозер Caterpillar",
-      price: 18000,
-      priceUnit: "сутки" as const,
-      location: "Джалал-Абад",
-      rating: 4.9,
-      reviewsCount: 12,
-      isPopular: true,
-      ownerName: "КатСтрой ОсОО",
-      description: "Мощный бульдозер для планировочных работ. Техническое состояние отличное."
-    }
-  ];
+  
+  const { filters, filteredEquipment, updateFilter } = useEquipmentFilters(mockEquipment);
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,7 +26,7 @@ const Catalog = () => {
             Каталог техники
           </h1>
           <p className="text-muted-foreground">
-            Найдено {mockEquipment.length} единиц техники
+            Найдено {filteredEquipment.length} единиц техники
           </p>
         </div>
 
@@ -94,16 +46,33 @@ const Catalog = () => {
                 </Button>
               </div>
 
+              {/* Search */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-foreground mb-3">
+                  Поиск
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Найти технику..."
+                    value={filters.search}
+                    onChange={(e) => updateFilter('search', e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
               {/* Equipment Type */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-foreground mb-3">
                   Тип техники
                 </label>
-                <Select>
+                <Select value={filters.category} onValueChange={(value) => updateFilter('category', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Выберите тип" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">Все типы</SelectItem>
                     <SelectItem value="excavator">Экскаваторы</SelectItem>
                     <SelectItem value="crane">Автокраны</SelectItem>
                     <SelectItem value="truck">Грузовики</SelectItem>
@@ -118,16 +87,17 @@ const Catalog = () => {
                 <label className="block text-sm font-medium text-foreground mb-3">
                   Город
                 </label>
-                <Select>
+                <Select value={filters.location} onValueChange={(value) => updateFilter('location', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Выберите город" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bishkek">Бишкек</SelectItem>
-                    <SelectItem value="osh">Ош</SelectItem>
-                    <SelectItem value="jalal-abad">Джалал-Абад</SelectItem>
-                    <SelectItem value="karakol">Каракол</SelectItem>
-                    <SelectItem value="talas">Талас</SelectItem>
+                    <SelectItem value="">Все города</SelectItem>
+                    <SelectItem value="Бишкек">Бишкек</SelectItem>
+                    <SelectItem value="Ош">Ош</SelectItem>
+                    <SelectItem value="Джалал-Абад">Джалал-Абад</SelectItem>
+                    <SelectItem value="Каракол">Каракол</SelectItem>
+                    <SelectItem value="Талас">Талас</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -135,19 +105,19 @@ const Catalog = () => {
               {/* Price Range */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-foreground mb-3">
-                  Цена за сутки (₸)
+                  Цена за сутки (сом)
                 </label>
                 <Slider
-                  value={priceRange}
-                  onValueChange={setPriceRange}
+                  value={filters.priceRange}
+                  onValueChange={(value) => updateFilter('priceRange', value)}
                   max={50000}
                   min={0}
                   step={1000}
                   className="mb-3"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>{priceRange[0].toLocaleString('ru-RU')} ₸</span>
-                  <span>{priceRange[1].toLocaleString('ru-RU')} ₸</span>
+                  <span>{filters.priceRange[0].toLocaleString('ru-RU')} сом</span>
+                  <span>{filters.priceRange[1].toLocaleString('ru-RU')} сом</span>
                 </div>
               </div>
 
@@ -173,7 +143,7 @@ const Catalog = () => {
                   Фильтры
                 </Button>
                 
-                <Select defaultValue="popular">
+                <Select value={filters.sortBy} onValueChange={(value) => updateFilter('sortBy', value)}>
                   <SelectTrigger className="w-48">
                     <SelectValue />
                   </SelectTrigger>
@@ -211,7 +181,7 @@ const Catalog = () => {
                 ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                 : "space-y-6"
             }>
-              {mockEquipment.map((equipment) => (
+              {filteredEquipment.map((equipment) => (
                 <EquipmentCard
                   key={equipment.id}
                   {...equipment}
