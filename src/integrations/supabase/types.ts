@@ -14,7 +14,210 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      equipment: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          location: string | null
+          name: string
+          owner_id: string
+          price_per_day: number | null
+          price_per_hour: number | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          name: string
+          owner_id: string
+          price_per_day?: number | null
+          price_per_hour?: number | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          name?: string
+          owner_id?: string
+          price_per_day?: number | null
+          price_per_hour?: number | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          equipment_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          equipment_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          equipment_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company_inn: string | null
+          company_logo_url: string | null
+          company_name: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          is_verified: boolean | null
+          last_name: string | null
+          payment_details: string | null
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company_inn?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          is_verified?: boolean | null
+          last_name?: string | null
+          payment_details?: string | null
+          phone?: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company_inn?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          is_verified?: boolean | null
+          last_name?: string | null
+          payment_details?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rental_requests: {
+        Row: {
+          created_at: string
+          end_date: string
+          equipment_id: string
+          id: string
+          message: string | null
+          owner_id: string
+          renter_id: string
+          start_date: string
+          status: string | null
+          total_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          equipment_id: string
+          id?: string
+          message?: string | null
+          owner_id: string
+          renter_id: string
+          start_date: string
+          status?: string | null
+          total_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          equipment_id?: string
+          id?: string
+          message?: string | null
+          owner_id?: string
+          renter_id?: string
+          start_date?: string
+          status?: string | null
+          total_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rental_requests_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rental_requests_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "rental_requests_renter_id_fkey"
+            columns: ["renter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +226,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "renter" | "owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +353,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["renter", "owner"],
+    },
   },
 } as const
