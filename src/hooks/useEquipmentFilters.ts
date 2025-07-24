@@ -27,8 +27,8 @@ export interface Filters {
 export const useEquipmentFilters = (equipment: Equipment[]) => {
   const [filters, setFilters] = useState<Filters>({
     search: '',
-    category: '',
-    location: '',
+    category: 'all',
+    location: 'all',
     priceRange: [0, 50000],
     sortBy: 'popular'
   });

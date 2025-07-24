@@ -67,12 +67,12 @@ const Catalog = () => {
                 <label className="block text-sm font-medium text-foreground mb-3">
                   Тип техники
                 </label>
-                <Select value={filters.category} onValueChange={(value) => updateFilter('category', value)}>
+                <Select value={filters.category} onValueChange={(value) => updateFilter('category', value === 'all' ? '' : value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Выберите тип" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Все типы</SelectItem>
+                    <SelectItem value="all">Все типы</SelectItem>
                     <SelectItem value="excavator">Экскаваторы</SelectItem>
                     <SelectItem value="crane">Автокраны</SelectItem>
                     <SelectItem value="truck">Грузовики</SelectItem>
@@ -87,12 +87,12 @@ const Catalog = () => {
                 <label className="block text-sm font-medium text-foreground mb-3">
                   Город
                 </label>
-                <Select value={filters.location} onValueChange={(value) => updateFilter('location', value)}>
+                <Select value={filters.location} onValueChange={(value) => updateFilter('location', value === 'all' ? '' : value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Выберите город" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Все города</SelectItem>
+                    <SelectItem value="all">Все города</SelectItem>
                     <SelectItem value="Бишкек">Бишкек</SelectItem>
                     <SelectItem value="Ош">Ош</SelectItem>
                     <SelectItem value="Джалал-Абад">Джалал-Абад</SelectItem>
