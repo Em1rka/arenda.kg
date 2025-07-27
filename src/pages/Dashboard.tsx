@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Session } from "@supabase/supabase-js";
 import { 
   Sidebar, 
   SidebarContent, 
@@ -37,23 +35,35 @@ import { Badge } from "@/components/ui/badge";
 
 type UserProfile = {
   id: string;
-  user_id: string;
   role: 'renter' | 'owner';
-  first_name: string | null;
-  last_name: string | null;
-  phone: string | null;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
   avatar_url: string | null;
   company_name: string | null;
   company_inn: string | null;
-  company_logo_url: string | null;
-  payment_details: string | null;
   is_verified: boolean;
   created_at: string;
-  updated_at: string;
+};
+
+// Mock user data for demo
+const mockProfile: UserProfile = {
+  id: '1',
+  role: 'owner',
+  first_name: 'Иван',
+  last_name: 'Петров',
+  email: 'ivan@example.com',
+  phone: '+996 555 123 456',
+  avatar_url: null,
+  company_name: 'ОсОО "СтройТех"',
+  company_inn: '12345678901234',
+  is_verified: true,
+  created_at: new Date().toISOString(),
 };
 
 const AppSidebar = ({ profile, activeTab, setActiveTab }: { 
-  profile: UserProfile | null;
+  profile: UserProfile;
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }) => {
@@ -76,14 +86,14 @@ const AppSidebar = ({ profile, activeTab, setActiveTab }: {
     { id: "analytics", title: "Аналитика", icon: BarChart3 },
   ];
 
-  const menuItems = profile?.role === 'owner' ? ownerMenuItems : renterMenuItems;
+  const menuItems = profile.role === 'owner' ? ownerMenuItems : renterMenuItems;
 
   return (
     <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-sm font-semibold">
-            {profile?.role === 'owner' ? 'Владелец техники' : 'Арендатор'}
+            {profile.role === 'owner' ? 'Владелец техники' : 'Арендатор'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -108,9 +118,7 @@ const AppSidebar = ({ profile, activeTab, setActiveTab }: {
   );
 };
 
-const ProfileContent = ({ profile }: { profile: UserProfile | null }) => {
-  if (!profile) return null;
-
+const ProfileContent = ({ profile }: { profile: UserProfile }) => {
   return (
     <div className="space-y-6">
       <Card>
@@ -124,15 +132,19 @@ const ProfileContent = ({ profile }: { profile: UserProfile | null }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Имя</label>
-              <p className="font-medium">{profile.first_name || 'Не указано'}</p>
+              <p className="font-medium">{profile.first_name}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Фамилия</label>
-              <p className="font-medium">{profile.last_name || 'Не указано'}</p>
+              <p className="font-medium">{profile.last_name}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Email</label>
+              <p className="font-medium">{profile.email}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Телефон</label>
-              <p className="font-medium">{profile.phone || 'Не указан'}</p>
+              <p className="font-medium">{profile.phone}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Статус</label>
@@ -150,11 +162,11 @@ const ProfileContent = ({ profile }: { profile: UserProfile | null }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Название компании</label>
-                  <p className="font-medium">{profile.company_name || 'Не указано'}</p>
+                  <p className="font-medium">{profile.company_name}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">ИНН</label>
-                  <p className="font-medium">{profile.company_inn || 'Не указан'}</p>
+                  <p className="font-medium">{profile.company_inn}</p>
                 </div>
               </div>
             </div>
@@ -177,16 +189,16 @@ const ProfileContent = ({ profile }: { profile: UserProfile | null }) => {
   );
 };
 
-const RequestsContent = ({ profile }: { profile: UserProfile | null }) => (
+const RequestsContent = ({ profile }: { profile: UserProfile }) => (
   <div className="space-y-6">
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="h-5 w-5" />
-          {profile?.role === 'owner' ? 'Входящие заявки' : 'Мои заявки'}
+          {profile.role === 'owner' ? 'Входящие заявки' : 'Мои заявки'}
         </CardTitle>
         <CardDescription>
-          {profile?.role === 'owner' 
+          {profile.role === 'owner' 
             ? 'Заявки на аренду вашей техники' 
             : 'Ваши запросы на аренду техники'
           }
@@ -251,92 +263,17 @@ const FavoritesContent = () => (
 );
 
 const Dashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile] = useState<UserProfile>(mockProfile);
   const [activeTab, setActiveTab] = useState("profile");
-  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (!session) {
-          navigate('/login');
-        } else {
-          // Fetch user profile when authenticated
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
-        }
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (!session) {
-        navigate('/login');
-      } else {
-        fetchProfile(session.user.id);
-      }
-      setIsLoading(false);
+  const handleLogout = () => {
+    toast({
+      title: "Выход",
+      description: "Вы успешно вышли из аккаунта",
     });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching profile:', error);
-        toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить профиль",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      setProfile(data);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось выйти из аккаунта",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      toast({
-        title: "Выход",
-        description: "Вы успешно вышли из аккаунта",
-      });
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    navigate('/');
   };
 
   const renderContent = () => {
@@ -353,21 +290,6 @@ const Dashboard = () => {
         return <ProfileContent profile={profile} />;
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Загрузка...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user || !profile) {
-    return null;
-  }
 
   return (
     <SidebarProvider>
@@ -399,7 +321,7 @@ const Dashboard = () => {
             <div className="max-w-4xl mx-auto">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-foreground">
-                  Добро пожаловать, {profile.first_name || 'Пользователь'}!
+                  Добро пожаловать, {profile.first_name}!
                 </h2>
                 <p className="text-muted-foreground">
                   {profile.role === 'owner' 

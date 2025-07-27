@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Lock, User, Building, Phone, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const RegisterPage = () => {
@@ -40,145 +39,34 @@ const RegisterPage = () => {
     agreeMarketing: false
   });
 
-  useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate('/dashboard');
-      }
-    };
-    checkUser();
-  }, [navigate]);
-
   const handleRenterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Базовая валидация
-    if (renterData.password !== renterData.confirmPassword) {
-      toast({
-        title: "Ошибка",
-        description: "Пароли не совпадают",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (!renterData.agreeTerms) {
-      toast({
-        title: "Ошибка",
-        description: "Необходимо согласиться с условиями использования",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: renterData.email,
-        password: renterData.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            role: 'renter',
-            first_name: renterData.name.split(' ')[0],
-            last_name: renterData.name.split(' ').slice(1).join(' '),
-          }
-        }
-      });
-
-      if (error) {
-        toast({
-          title: "Ошибка регистрации",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (data.user) {
-        toast({
-          title: "Регистрация успешна",
-          description: "Добро пожаловать! Переходим в личный кабинет...",
-        });
-        navigate('/dashboard');
-      }
-    } catch (error) {
+    
+    // Simulate loading for demo
+    setTimeout(() => {
       toast({
-        title: "Ошибка",
-        description: "Произошла неожиданная ошибка",
-        variant: "destructive"
+        title: "Регистрация успешна",
+        description: "Добро пожаловать! Аккаунт арендатора создан.",
       });
-    } finally {
+      navigate('/dashboard');
       setIsLoading(false);
-    }
+    }, 1000);
   };
 
   const handleOwnerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Базовая валидация
-    if (ownerData.password !== ownerData.confirmPassword) {
-      toast({
-        title: "Ошибка",
-        description: "Пароли не совпадают",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (!ownerData.agreeTerms) {
-      toast({
-        title: "Ошибка",
-        description: "Необходимо согласиться с условиями использования",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: ownerData.email,
-        password: ownerData.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            role: 'owner',
-            first_name: ownerData.name.split(' ')[0],
-            last_name: ownerData.name.split(' ').slice(1).join(' '),
-          }
-        }
-      });
-
-      if (error) {
-        toast({
-          title: "Ошибка регистрации",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (data.user) {
-        toast({
-          title: "Регистрация успешна",
-          description: "Добро пожаловать! Переходим в личный кабинет...",
-        });
-        navigate('/dashboard');
-      }
-    } catch (error) {
+    
+    // Simulate loading for demo
+    setTimeout(() => {
       toast({
-        title: "Ошибка",
-        description: "Произошла неожиданная ошибка",
-        variant: "destructive"
+        title: "Регистрация успешна",
+        description: "Добро пожаловать! Аккаунт владельца создан.",
       });
-    } finally {
+      navigate('/dashboard');
       setIsLoading(false);
-    }
+    }, 1000);
   };
 
   return (
