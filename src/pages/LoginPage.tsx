@@ -28,7 +28,7 @@ const LoginPage = () => {
         title: "Успешный вход",
         description: "Добро пожаловать!",
       });
-      navigate('/dashboard');
+      navigate('/dashboard', { state: { userRole: 'renter' } });
       setIsLoading(false);
     }, 1000);
   };

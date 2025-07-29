@@ -49,7 +49,7 @@ const RegisterPage = () => {
         title: "Регистрация успешна",
         description: "Добро пожаловать! Аккаунт арендатора создан.",
       });
-      navigate('/dashboard');
+      navigate('/dashboard', { state: { userRole: 'renter' } });
       setIsLoading(false);
     }, 1000);
   };
@@ -64,7 +64,7 @@ const RegisterPage = () => {
         title: "Регистрация успешна",
         description: "Добро пожаловать! Аккаунт владельца создан.",
       });
-      navigate('/dashboard');
+      navigate('/dashboard', { state: { userRole: 'owner' } });
       setIsLoading(false);
     }, 1000);
   };
